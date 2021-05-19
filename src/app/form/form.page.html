@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title align="center" >EDT univ-nc.nc</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content  class="centered">
+  <ion-img src="assets/img/Logo_Université_de_la_Nouvelle-Calédonie.jpg" id="logoUnc"></ion-img>
+
+                <ion-input style="text-align:center;" placeholder="Identifiant UNC" [(ngModel)]="uid"></ion-input>
+                  <br>
+                  <br>
+                  
+                <ion-button expand="full" align="center" (click)="navigate()" >Valider</ion-button>
+                  <br>
+                  <ion-list>                  
+                    <ion-item>
+                      <ion-label>Groupe</ion-label>
+
+                      <ion-select #grps (ionChange)="change(grps.value)" interface="alert"  placeholder="Aucun" >
+                        <ion-select-option *ngFor="let opt of options" [value]="opt">{{opt}}</ion-select-option>
+                      </ion-select>
+
+                    </ion-item>
+                  </ion-list>
+</ion-content>

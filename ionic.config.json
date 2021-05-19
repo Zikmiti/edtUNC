@@ -1,0 +1,7 @@
+{
+  "name": "edt-UNC",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

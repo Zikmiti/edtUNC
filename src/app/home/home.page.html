@@ -1,0 +1,103 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+    {{etudiant}}
+    </ion-title>
+    <ion-buttons slot="end">
+    <div *ngIf="ready">
+      <ion-icon name="caret-back-outline" (click)="previousWeek()"> </ion-icon><ion-badge color="#588093"> Semaine {{weekNumber - 1}}  </ion-badge><ion-icon name="caret-forward-outline" (click)="nextWeek()"></ion-icon>
+    </div>
+  </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content [fullscreen]="true" >
+  
+<div *ngIf="!ready; then thenBlock else elseBlock"></div>
+  <ng-template #thenBlock>
+    <ion-progress-bar type="indeterminate"></ion-progress-bar>
+  </ng-template>
+
+
+<ng-template #elseBlock >
+  
+  <div class="cd-schedule cd-schedule--loading margin-top-lg margin-bottom-lg js-cd-schedule">
+    <div class="cd-schedule__timeline">
+      <ul>
+        <li><span>07:30</span></li>
+        <li><span>08:00</span></li>
+        <li><span>08:30</span></li>
+        <li><span>09:00</span></li>
+        <li><span>09:30</span></li>
+        <li><span>10:00</span></li>
+        <li><span>10:30</span></li>
+        <li><span>11:00</span></li>
+        <li><span>11:30</span></li>
+        <li><span>12:00</span></li>
+        <li><span>12:30</span></li>
+        <li><span>13:00</span></li>
+        <li><span>13:30</span></li>
+        <li><span>14:00</span></li>
+        <li><span>14:30</span></li>
+        <li><span>15:00</span></li>
+        <li><span>15:30</span></li>
+        <li><span>16:00</span></li>
+        <li><span>16:30</span></li>
+        <li><span>17:00</span></li>
+        <li><span>17:30</span></li>
+        <li><span>18:00</span></li>
+        <li><span>18:30</span></li>
+        <li><span>19:30</span></li>
+      </ul>
+    </div> <!-- .cd-schedule__timeline -->
+  
+    <div class="cd-schedule__events">
+      <ul>
+        <li class="cd-schedule__group" *ngFor="let cour of result| keyvalue">
+          <div class="cd-schedule__top-info"><span>{{cour.value[0].date.full }} </span> </div>
+          <ul>
+              <li class="cd-schedule__event" *ngFor="let detail of cour.value | keyvalue" >
+                <div *ngIf="detail.value.type == 'Cm'">
+                  <a  [attr.data-start]="detail.value.heureDebut" [attr.data-end]="detail.value.heureFin" data-event="event-4" >
+                    <em>{{detail.value.matiere}}<div *ngIf="detail.value.ctrl"><ion-badge color="danger"><ion-icon name="warning-outline"></ion-icon></ion-badge></div></em>
+                  </a>
+                </div>
+                <div *ngIf="detail.value.type == 'Tp'">
+                  <a  [attr.data-start]="detail.value.heureDebut" [attr.data-end]="detail.value.heureFin" data-event="event-3" >
+                    <em>{{detail.value.matiere}}<div *ngIf="detail.value.ctrl"><ion-badge color="danger"><ion-icon name="warning-outline"></ion-icon></ion-badge></div></em>
+                  </a>
+                </div>
+                <div *ngIf="detail.value.type == 'Td'">
+                  <a  [attr.data-start]="detail.value.heureDebut" [attr.data-end]="detail.value.heureFin" data-event="event-1" >
+                    <em>{{detail.value.matiere}}<div *ngIf="detail.value.ctrl"><ion-badge color="danger"><ion-icon name="warning-outline"></ion-icon></ion-badge></div></em>
+                  </a>
+                </div>
+              </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  
+     <!-- <div class="cd-schedule-modal">
+      <header class="cd-schedule-modal__header">
+        <div class="cd-schedule-modal__content">
+          <span class="cd-schedule-modal__date"></span>
+          <h3 class="cd-schedule-modal__name"></h3>
+        </div>
+  
+        <div class="cd-schedule-modal__header-bg"></div>
+      </header>
+  
+      <div class="cd-schedule-modal__body">
+        <div class="cd-schedule-modal__event-info"></div>
+        <div class="cd-schedule-modal__body-bg"></div>
+      </div>
+  
+      <a href="#0" class="cd-schedule-modal__close text-replace">Close</a>
+    </div> 
+  
+    <div class="cd-schedule__cover-layer"></div> -->
+  </div>
+</ng-template>
+</ion-content>

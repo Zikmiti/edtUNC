@@ -1,0 +1,14 @@
+.centered {
+    position: fixed;
+    top: 70%;
+    left: 50%;
+    /* bring your own prefixes */
+    width: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  #logoUnc{
+    margin: auto;
+    width: 50%;
+      height: auto;
+  }
