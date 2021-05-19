@@ -2,8 +2,20 @@
 
 Pour permettre aux étudiants de lire correctement leur emploi du temps
 
-## Installation
+## Build PC
 
 ```bash
 npm install
+```
+
+## Build Android
+
+```bash
+ionic build
+```
+```bash
+ionic cap add android
+```
+```bash
+ionic cap open android
 ```
