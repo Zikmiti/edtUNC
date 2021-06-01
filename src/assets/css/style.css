@@ -3519,6 +3519,10 @@ mark {
     --cd-color-event-4-h: 31;
     --cd-color-event-4-s: 89%;
     --cd-color-event-4-l: 68%;
+    --cd-color-event-5: hsl(13, 89%, 68%);
+    --cd-color-event-5-h: 13;
+    --cd-color-event-5-s: 89%;
+    --cd-color-event-5-l: 68%;
     --cd-color-text: hsl(0, 0%, 13%);
     --cd-color-text-h: 0;
     --cd-color-text-s: 0%;
@@ -3528,7 +3532,7 @@ mark {
     --cd-color-border-s: 0%;
     --cd-color-border-l: 92%;
     --font-primary: 'Source Sans Pro', sans-serif;
-    --schedule-rows-number: 19;
+    --schedule-rows-number: 24;
     --schedule-rows-height: 50px
 }
 
@@ -3777,7 +3781,7 @@ a {
 
 @media(max-width: 1023px) {
     .cd-schedule__event div a {
-        height: 100px;
+        height: fit-content;
     }
     
 }
@@ -3863,6 +3867,11 @@ a {
 .cd-schedule__event [data-event=event-4],.cd-schedule-modal[data-event=event-4] .cd-schedule-modal__header-bg {
     background: #f6b065;
     background: var(--cd-color-event-4)
+}
+
+.cd-schedule__event [data-event=event-5],.cd-schedule-modal[data-event=event-5] .cd-schedule-modal__header-bg {
+    background: #f68465 ;
+    background: var(--cd-color-event-5)
 }
 
 .cd-schedule-modal {

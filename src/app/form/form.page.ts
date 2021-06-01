@@ -1,6 +1,8 @@
+import { noUndefined } from '@angular/compiler/src/util';
 import { Component, OnInit, Input } from '@angular/core';
-import { Router } from '@angular/router';
-
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ToastController } from '@ionic/angular';
+import { filter } from 'rxjs/operators'
 @Component({
   selector: 'app-form',
   templateUrl: './form.page.html',
@@ -12,11 +14,27 @@ export class FormPage implements OnInit {
   public uid : string = '';
   
   public grps : string = '';
-  public options : string[] = ["Tout","9A","9C","9B"]
+  public options : string[] = [" ","9A","9C","9B","GRP1","GRP2","GRP3","GRP4","GRP5"]
 
-  constructor(private router: Router) { }
+  constructor(private router: Router,private route: ActivatedRoute,public toastController: ToastController) { 
+    this.route = route;
+  }
+
+
+  async presentToast(message) {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 10000,
+      cssClass: "centerToast",
+    });
+    toast.present();
+  }
+
 
   ngOnInit() {
+    this.route.queryParams.subscribe(queryParams => {
+     if(queryParams.ErrorMessage != undefined) this.presentToast(queryParams.ErrorMessage);
+    });
   }
 
   change(value){

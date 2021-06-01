@@ -5,7 +5,10 @@
     </ion-title>
     <ion-buttons slot="end">
     <div *ngIf="ready">
-      <ion-icon name="caret-back-outline" (click)="previousWeek()"> </ion-icon><ion-badge color="#588093"> Semaine {{weekNumber - 1}}  </ion-badge><ion-icon name="caret-forward-outline" (click)="nextWeek()"></ion-icon>
+      <ion-item> 
+       <ion-icon name="caret-back-outline" (click)="previousWeek()"> </ion-icon><ion-badge color="#588093"><ion-datetime #myPicker style="margin: 0;padding: 0; " displayFormat="S {{weekNumber - 1}}" done-text="Valider" cancel-text="Annuler" pickerFormat="DD | MM"  placeholder="Semaine {{weekNumber - 1}}"  (ionChange)="updateMyDate(myPicker)"  value="{{currentDate}}" ></ion-datetime>
+       </ion-badge><ion-icon name="caret-forward-outline" (click)="nextWeek()"></ion-icon>
+      </ion-item>
     </div>
   </ion-buttons>
   </ion-toolbar>
@@ -22,7 +25,7 @@
 
 <ng-template #elseBlock >
   
-  <div class="cd-schedule cd-schedule--loading margin-top-lg margin-bottom-lg js-cd-schedule">
+  <div class="cd-schedule cd-schedule--loading margin-top-lg margin-bottom-lg js-cd-schedule  js-schedule-loaded">
     <div class="cd-schedule__timeline">
       <ul>
         <li><span>07:30</span></li>
@@ -58,19 +61,29 @@
           <div class="cd-schedule__top-info"><span>{{cour.value[0].date.full }} </span> </div>
           <ul>
               <li class="cd-schedule__event" *ngFor="let detail of cour.value | keyvalue" >
-                <div *ngIf="detail.value.type == 'Cm'">
+                <div *ngIf="detail.value.type == 'Cm'" [ngClass]="detail.value.ctrl ? 'border-ctrl': ''">
                   <a  [attr.data-start]="detail.value.heureDebut" [attr.data-end]="detail.value.heureFin" data-event="event-4" >
-                    <em>{{detail.value.matiere}}<div *ngIf="detail.value.ctrl"><ion-badge color="danger"><ion-icon name="warning-outline"></ion-icon></ion-badge></div></em>
+                    <em [innerHTML]="detail.value.matiere"><div *ngIf="detail.value.ctrl"><ion-badge color="danger"><ion-icon name="warning-outline"></ion-icon></ion-badge></div></em>
                   </a>
                 </div>
                 <div *ngIf="detail.value.type == 'Tp'">
                   <a  [attr.data-start]="detail.value.heureDebut" [attr.data-end]="detail.value.heureFin" data-event="event-3" >
-                    <em>{{detail.value.matiere}}<div *ngIf="detail.value.ctrl"><ion-badge color="danger"><ion-icon name="warning-outline"></ion-icon></ion-badge></div></em>
+                    <em [innerHTML]="detail.value.matiere">{{detail.value.matiere}}<div *ngIf="detail.value.ctrl"><ion-badge color="danger"><ion-icon name="warning-outline"></ion-icon></ion-badge></div></em>
                   </a>
                 </div>
-                <div *ngIf="detail.value.type == 'Td'">
+                <div *ngIf="detail.value.type == 'Td'" [ngClass]="detail.value.ctrl ? 'border-ctrl': ''">
                   <a  [attr.data-start]="detail.value.heureDebut" [attr.data-end]="detail.value.heureFin" data-event="event-1" >
-                    <em>{{detail.value.matiere}}<div *ngIf="detail.value.ctrl"><ion-badge color="danger"><ion-icon name="warning-outline"></ion-icon></ion-badge></div></em>
+                    <em [innerHTML]="detail.value.matiere">{{detail.value.matiere}}<div *ngIf="detail.value.ctrl"><ion-badge color="danger"><ion-icon name="warning-outline"></ion-icon></ion-badge></div></em>
+                  </a>
+                </div>
+                <div *ngIf="detail.value.type == 'Colles'">
+                  <a  [attr.data-start]="detail.value.heureDebut" [attr.data-end]="detail.value.heureFin" data-event="event-2" >
+                    <em [innerHTML]="detail.value.matiere">{{detail.value.matiere}}<div *ngIf="detail.value.ctrl"><ion-badge color="danger"><ion-icon name="warning-outline"></ion-icon></ion-badge></div></em>
+                  </a>
+                </div>
+                <div *ngIf="detail.value.type == 'Seminaire'">
+                  <a  [attr.data-start]="detail.value.heureDebut" [attr.data-end]="detail.value.heureFin" data-event="event-5" >
+                    <em [innerHTML]="detail.value.matiere">{{detail.value.matiere}}<div *ngIf="detail.value.ctrl"><ion-badge color="danger"><ion-icon name="warning-outline"></ion-icon></ion-badge></div></em>
                   </a>
                 </div>
               </li>

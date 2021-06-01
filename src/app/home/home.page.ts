@@ -1,11 +1,8 @@
-import { Component,OnInit } from '@angular/core';
+import { Component,OnInit, Input } from '@angular/core';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import {Router, ActivatedRoute, Params} from '@angular/router';
-import { PopoverController } from '@ionic/angular';
-
 import { request } from 'request';
-import { PopoverComponent } from 'assets/js/popover/popover.component';
 
 @Component({
   selector: 'app-home',
@@ -20,7 +17,7 @@ export class HomePage implements OnInit {
   public details : Detail[] = [];
   public headers : HttpHeaders;
   public etudiant: string;
-  public date: Date;
+  @Input() public currentDate: Date = new Date();
   public currentSemaine : String[];
   public printable: Detail[] = [];
   public cours: any[][] = [];  
@@ -28,11 +25,18 @@ export class HomePage implements OnInit {
   public grp: string;
   public ready:boolean = false;
   public result :any[] = [];
-  public weekNumber : Number = this.getWeekNumber().valueOf();
+  public weekNumber : Number = this.getWeekNumber(new Date()).valueOf();
+  public colorCard : Number[];
 
-  constructor(private http: HttpClient,private route: ActivatedRoute,private router: Router,public popoverController: PopoverController) {
+  constructor(private http: HttpClient,private route: ActivatedRoute,private router: Router) {
    
    
+  }
+
+  updateMyDate($event) {
+   this.currentDate = new Date(Date.parse($event.value)); 
+   this.weekNumber  = this.getWeekNumber(this.currentDate) ;
+   this.createEdt(this.weekNumber.valueOf());
   }
 
   ngOnInit(): void {
@@ -51,12 +55,12 @@ export class HomePage implements OnInit {
   }
 
 
-  createEdt(wkNbr){ //création de l'edt en fonction du N° Semaine
-
+  createEdt(wkNbr : number){ //création de l'edt en fonction du N° Semaine
+    // console.log(wkNbr)
     this.result = [];   // initialisation à vide 
     this.cours = [];
-    this.currentSemaine =this.getDateRangeOfWeek(wkNbr) //tableau de tout les jours de la semaine en fonction du N° semaine de l'année
-
+    this.currentSemaine = this.getDateRangeOfWeek(wkNbr) //tableau de tout les jours de la semaine en fonction du N° semaine de l'année
+    console.log(this.currentSemaine)
     this.details.forEach(detail => {
       this.currentSemaine.forEach(jour =>{
         if(detail.date.full == jour){
@@ -68,7 +72,7 @@ export class HomePage implements OnInit {
       })
     });
 
-    this.result = [this.cours["lundi"],this.cours["mardi"],this.cours["mercredi"],this.cours["jeudi"],this.cours["vendredi"]]; //réorganise la semaine dans l'ordre
+    this.result = [this.cours["lundi"],this.cours["mardi"],this.cours["mercredi"],this.cours["jeudi"],this.cours["vendredi"],this.cours["samedi"]]; //réorganise la semaine dans l'ordre
 
     this.result.forEach((array , key) => { // this.result sont les données retourné à la vue 
       if(array != undefined){
@@ -85,7 +89,7 @@ export class HomePage implements OnInit {
       
     });
 
-    console.log(this.result)
+    //  console.log(this.result)
   }
 
 
@@ -96,35 +100,40 @@ export class HomePage implements OnInit {
   
 
     this.http.get<any>(url).forEach((value)=>{
-      let json = JSON.parse(value);
-
-      if(json.success){
-        this.etudiant = json.vcalendar[0]["x-wr-calname"];
-        let cours = json.vcalendar[0].vevent;
+      let json = value;
+      if(json.VCALENDAR){
+        this.etudiant = json.VCALENDAR[0]["X-WR-CALNAME"];
+        let cours = json.VCALENDAR[0].VEVENT;
         if(cours != undefined){
         cours.forEach(cours => {
-           if(cours.summary.includes(grp)){ //en fonction du groupe choisi ou pas
+           if(cours.SUMMARY.includes(grp)){ //en fonction du groupe choisi ou pas
 
-            let matiere = cours.summary;
-            let date = this.convertDate(cours.dtstart).date;
-            let debut = `${this.convertDate(cours.dtstart).heure}`;
-            let fin =  `${this.convertDate(cours.dtend).heure}`;
+            let matiere = cours.SUMMARY;
+            let date = this.convertDate(cours.DTSTART).date;
+            let debut = `${this.convertDate(cours.DTSTART).heure}`;
+            let fin =  `${this.convertDate(cours.DTEND).heure}`;
             let type;
             
 
 
-            matiere = matiere.split('\\n').join(' ').split('\\').join(' ')
-            matiere = matiere.replace(/ *\([^)]*\) */g, ""); //retire des informations inutiles REGEX
-            matiere = matiere.replace('[Edt-Ens]', ""); //retire des informations inutiles
+            matiere = matiere.split('\\n').join(';').split('\\').join(' ')
+
+            matiere =  matiere.split(',').join('');
+           matiere = matiere.replace(/ *\([^)]*\) */g, ""); //retire des informations inutiles REGEX
+
+           matiere = matiere.replace('[Edt-Ens]', ""); //retire des informations inutiles
             
+           matiere = matiere.split(";").join('<br>');
             
                 
-              if(cours.summary.includes("Cm")) type = "Cm";
-              if(cours.summary.includes("Td")) type = "Td";
-              if(cours.summary.includes("Tp")) type = "Tp";
+              if(cours.SUMMARY.includes("Cm") || cours.SUMMARY.includes("CM")) type = "Cm";
+              if(cours.SUMMARY.includes("Td")) type = "Td";
+              if(cours.SUMMARY.includes("Tp")) type = "Tp";
+              if(cours.SUMMARY.includes("Colles")) type = "Colles";
+              if(cours.SUMMARY.includes("Seminaire")) type = "Seminaire";
               
   
-            this.details.push(new Detail(date,type,matiere,debut,fin,cours.summary.includes("CONTRLE"))); //un Detail représente un cour de l'emploie du tmps
+            this.details.push(new Detail(date,type,matiere,debut,fin,cours.SUMMARY.includes("CON"))); //un Detail représente un cour de l'emploie du tmps
           }
       });
 
@@ -133,27 +142,28 @@ export class HomePage implements OnInit {
       this.ready = true; //prêt à afficher ! permet de stoper l'animation de chargement
 
       }else{
-         this.getOut(); //renvoie au portail si erreur
+         this.getOut("Vous avez terminé votre cursus universitaire"); //renvoie au portail si erreur
       }
     }
     else{
-        this.getOut(); //renvoie au portail si erreur
+        this.getOut("Cet identifiant n'existe pas"); //renvoie au portail si erreur
     }
   });
 }
 
 
-  getOut(){
-    this.router.navigateByUrl(`/form`); // navigation -> portail
+  getOut(message){
+    this.router.navigate(['/form'], { queryParams: { ErrorMessage: message } }); // navigation -> portail
   }
 
 
-  getWeekNumber(date = new Date()) : Number{ //récupère le N° de la Semaine en fonction de la Date en paramêtre
-     let today = date;  
-     let oneJan =  new Date(today.getFullYear(), 0, 1);     
-      let numberOfDays =  Math.floor((today.valueOf() - oneJan.valueOf()) / (24 * 60 * 60 * 1000));   
-      let result = Math.ceil(( today.getDay()+ 1 + numberOfDays) / 7);            
-      return result ; 
+  getWeekNumber(date : Date) : Number{ //récupère le N° de la Semaine en fonction de la Date en paramêtre
+
+    const today = date;
+    const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+    const pastDaysOfYear = (today.valueOf() - firstDayOfYear.valueOf()) / 86400000;
+    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+
   }
 
 
@@ -165,7 +175,7 @@ export class HomePage implements OnInit {
 
     let numOfdaysPastSinceLastMonday = today.getDay() - 1;
     today.setDate(today.getDate() - numOfdaysPastSinceLastMonday);
-    var weekNoToday = this.getWeekNumber();
+    var weekNoToday = this.getWeekNumber(new Date());
     var weeksInTheFuture =  weekNo.valueOf() - weekNoToday.valueOf();
     today.setDate(today.getDate() +  7 * weeksInTheFuture );
 
