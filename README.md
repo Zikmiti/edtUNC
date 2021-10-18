@@ -8,6 +8,12 @@ Pour permettre aux étudiants de lire correctement leur emploi du temps
 npm install
 ```
 
+## Starting app
+
+```bash
+ionic serve -o
+```
+
 ## Build Android
 
 ```bash
